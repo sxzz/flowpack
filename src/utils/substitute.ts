@@ -54,6 +54,10 @@ export function substituteString(
     if (replacement !== undefined) {
       return replacement
     }
+    const evaluated = staticExpression(expr, values)
+    if (evaluated) {
+      return evaluated.value
+    }
     const simplified = printExpression(expr, values)
     const staticValue = staticExpression(parseExpression(simplified), values)
     return staticValue ? staticValue.value : `\${{ ${simplified} }}`

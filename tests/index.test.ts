@@ -91,6 +91,21 @@ describe('actionspack', () => {
     ).toBe(
       "${{ (contains(github.ref_name, 'alpha') && 'alpha' || contains(github.ref_name, 'beta') && 'beta' || contains(github.ref_name, 'rc') && 'rc' || '') || 'latest' }}",
     )
+    expect(
+      substituteValue(
+        {
+          run: "pnpm dlx pkg-pr-new@0.0 publish --pnpm ${{ inputs.compact && '--compact' || '' }} ${{ inputs.packages }} ${{ inputs['comment-package-manager'] && format('--packageManager={0}', inputs['comment-package-manager']) || '' }} ${{ inputs['comment-with-dev'] && '--commentWithDev' || '' }}",
+        },
+        {
+          'inputs.comment-package-manager': 'pnpm,npm,yarn',
+          'inputs.comment-with-dev': true,
+          'inputs.compact': true,
+          'inputs.packages': ". './packages/*'",
+        },
+      ),
+    ).toEqual({
+      run: "pnpm dlx pkg-pr-new@0.0 publish --pnpm --compact . './packages/*' --packageManager=pnpm,npm,yarn --commentWithDev",
+    })
   })
 
   it('reports when pack has no source workflows', async () => {
