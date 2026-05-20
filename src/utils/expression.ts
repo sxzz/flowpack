@@ -286,7 +286,7 @@ function canEvaluateExpression(
   }
   if (expr instanceof IndexAccess) {
     return (
-      hasValueForIndexAccess(expr, values) ||
+      hasStaticValueForIndexAccess(expr, values) ||
       (canEvaluateExpression(expr.expr, values) &&
         canEvaluateExpression(expr.index, values))
     )
@@ -400,9 +400,28 @@ function replacementForIndexAccess(
   expr: IndexAccess,
   values: Record<string, unknown>,
 ): string | undefined {
-  return hasValueForIndexAccess(expr, values)
-    ? valueLiteral(valueForIndexAccess(expr, values))
-    : undefined
+  if (!hasValueForIndexAccess(expr, values)) {
+    return undefined
+  }
+  const value = valueForIndexAccess(expr, values)
+  if (typeof value === 'string') {
+    const body = expressionBody(value.trim())
+    if (body !== undefined) {
+      return `(${body})`
+    }
+  }
+  return valueLiteral(value)
+}
+
+function hasStaticValueForIndexAccess(
+  expr: IndexAccess,
+  values: Record<string, unknown>,
+): boolean {
+  if (!hasValueForIndexAccess(expr, values)) {
+    return false
+  }
+  const value = valueForIndexAccess(expr, values)
+  return typeof value !== 'string' || expressionBody(value.trim()) === undefined
 }
 
 function printIndexAccess(

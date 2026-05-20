@@ -55,6 +55,9 @@ class TestOutput {
 
 describe('actionspack', () => {
   it('simplifies static format calls inside expressions', () => {
+    const releaseTag =
+      "${{ contains(github.ref_name, 'alpha') && 'alpha' || contains(github.ref_name, 'beta') && 'beta' || contains(github.ref_name, 'rc') && 'rc' || '' }}"
+
     expect(
       substituteString(
         '${{ fromJson(format(\'[{0}]\', \'"ubuntu-latest", "windows-latest"\')) }}',
@@ -73,6 +76,21 @@ describe('actionspack', () => {
         {},
       ),
     ).toEqual({ run: 'pnpm install' })
+    expect(
+      substituteValue(
+        {
+          tag: releaseTag,
+        },
+        {},
+      ),
+    ).toEqual({ tag: releaseTag })
+    expect(
+      substituteString("${{ inputs.tag || 'latest' }}", {
+        'inputs.tag': releaseTag,
+      }),
+    ).toBe(
+      "${{ (contains(github.ref_name, 'alpha') && 'alpha' || contains(github.ref_name, 'beta') && 'beta' || contains(github.ref_name, 'rc') && 'rc' || '') || 'latest' }}",
+    )
   })
 
   it('reports when pack has no source workflows', async () => {
