@@ -34,7 +34,7 @@
       }
     },
     "external": {
-      "description": "GitHub actions or reusable workflows to pin in the lockfile but not bundle. Selectors may be owner/repo, owner/repo/path, or github:owner/repo//path.",
+      "description": "GitHub actions or reusable workflows to pin in the lockfile but not bundle. Selectors may be owner/repo, owner/repo/path, or github:owner/repo/path.",
       "type": "array",
       "items": {
         "type": "string",
@@ -43,7 +43,7 @@
         "examples": [
           "actions/checkout",
           "owner/repo/path",
-          "github:owner/repo//path"
+          "github:owner/repo/path"
         ]
       }
     }

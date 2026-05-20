@@ -1,4 +1,6 @@
-packages: []
+overrides:
+  fflate: 0.8.2
 
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 604800 # 7 days
+
