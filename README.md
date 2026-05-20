@@ -13,6 +13,23 @@ It currently supports inlining composite actions and safely transformable
 reusable workflows. JavaScript and Docker actions are pinned as external
 dependencies instead of being bundled.
 
+## Why actionspack?
+
+GitHub Actions workflows often depend on reusable workflows and actions from
+other repositories. You may want to author those dependencies with convenient
+floating refs like `@main` in `.github/workflows/src/`, but generated workflows
+should be reproducible and reviewable.
+
+`actionspack` gives workflows a lockfile mechanism similar to `pnpm`. It locks
+remote workflows and actions in `.github/workflow.lock.yml`, inlines everything
+that can be transformed safely into the local repository, and pins anything that
+cannot be inlined to a fixed SHA.
+
+To update workflow and action dependencies, run `actionspack update`
+periodically. The updated lockfile and generated workflows are normal repository
+files, so `git diff` shows exactly which dependencies changed and what generated
+workflow output changed.
+
 ## Install
 
 ```bash
@@ -48,6 +65,16 @@ npx actionspack
 
 Generated workflows are safe to commit. Existing lockfile SHAs are reused until
 you explicitly run `actionspack update`.
+
+When you want to refresh workflow/action dependencies:
+
+```bash
+npx actionspack update
+git diff
+```
+
+Review the dependency SHA changes in `.github/workflow.lock.yml` and the
+resulting generated workflow changes before committing.
 
 ## Commands
 
