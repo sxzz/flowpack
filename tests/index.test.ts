@@ -21,8 +21,11 @@ import { substituteString, substituteValue } from '../src/utils/substitute.ts'
 class FixtureGitHub implements GitHubClient {
   refs = new Map<string, string>()
   files = new Map<string, string>()
+  resolveCalls = new Map<string, number>()
 
   resolveRef(owner: string, repo: string, ref: string): Promise<string> {
+    const key = `${owner}/${repo}@${ref}`
+    this.resolveCalls.set(key, (this.resolveCalls.get(key) ?? 0) + 1)
     const resolved = this.refs.get(`${owner}/${repo}@${ref}`)
     if (!resolved) {
       throw new Error(`missing ref ${owner}/${repo}@${ref}`)
@@ -171,8 +174,8 @@ runs:
 
     const lockfile = await readYaml(path.join(cwd, '.github/workflow.lock.yml'))
     expect(Object.keys(lockfile.packages)).toEqual([
-      'github:acme/nested//.',
-      'github:acme/root//.',
+      'github:acme/nested',
+      'github:acme/root',
     ])
     expect(lockfile.entries['.github/workflows/src/ci.yml'].output).toBe(
       '.github/workflows/ci.yml',
@@ -234,13 +237,52 @@ runs:
 
     await scan({ cwd, github })
     expect(
-      (await readLockfile(cwd)).packages['github:acme/root//.'].resolved,
+      (await readLockfile(cwd)).packages['github:acme/root'].resolved,
     ).toBe('1111111111111111111111111111111111111111')
 
     await update({ cwd, github, lockfileOnly: true })
     expect(
-      (await readLockfile(cwd)).packages['github:acme/root//.'].resolved,
+      (await readLockfile(cwd)).packages['github:acme/root'].resolved,
     ).toBe('2222222222222222222222222222222222222222')
+  })
+
+  it('does not resolve or warn repeatedly during update packing', async () => {
+    const cwd = await fixtureRepo({
+      '.github/workflows/src/ci.yml': `
+on:
+  push:
+jobs:
+  one:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: acme/js@main
+  two:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: acme/js@main
+`,
+    })
+    const github = new FixtureGitHub()
+    github.refs.set('acme/js@main', '4444444444444444444444444444444444444444')
+    github.files.set(
+      'acme/js@4444444444444444444444444444444444444444:action.yml',
+      `
+name: JS
+description: JS action
+runs:
+  using: node20
+  main: dist/index.js
+`,
+    )
+    const stderr = new TestOutput()
+    const stdout = new TestOutput()
+
+    await update({ cwd, github, stderr, stdout })
+
+    expect(github.resolveCalls.get('acme/js@main')).toBe(1)
+    expect(stdout.text.match(/Resolving acme\/js@main/gu)).toHaveLength(1)
+    expect(stderr.text.match(/Unsupported action type/gu)).toHaveLength(1)
+    expect(stdout.text).toContain('Packed 1 workflow\n')
   })
 
   it('inlines safe reusable workflows with renamed jobs and a bridge job', async () => {
@@ -400,9 +442,7 @@ jobs:
       { uses: 'acme/root@6666666666666666666666666666666666666666' },
     ])
     const lockfile = await readLockfile(cwd)
-    expect(lockfile.packages['github:acme/root//.'].type).toBe(
-      'external-action',
-    )
+    expect(lockfile.packages['github:acme/root'].type).toBe('external-action')
   })
 
   it('accepts workflow entries from command options', async () => {
@@ -476,10 +516,10 @@ entries:
   .github/workflows/src/ci.yml:
     output: .github/workflows/ci.yml
     dependencies:
-      - package: github:acme/root//.
+      - package: github:acme/root
         requested: main
 packages:
-  github:acme/root//.:
+  github:acme/root:
     source: github
     owner: acme
     repo: root
@@ -502,15 +542,15 @@ packages:
       ...previous,
       packages: {
         ...previous.packages,
-        'github:acme/root//.': {
-          ...previous.packages['github:acme/root//.'],
+        'github:acme/root': {
+          ...previous.packages['github:acme/root'],
           resolved: 'new',
         },
       },
     }
     expect(diffLockfiles(previous, current).changed).toEqual([
       {
-        package: 'github:acme/root//.',
+        package: 'github:acme/root',
         oldResolved: 'old',
         newResolved: 'new',
         dependencyChanged: false,

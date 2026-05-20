@@ -3,7 +3,9 @@ import type { RemoteRef } from '../types.ts'
 const REMOTE_USES_RE = /^[\w.-]+\/[\w.-]+(?:\/[^@\s]+)?@[^@\s]+$/
 
 export function packageKey(owner: string, repo: string, path: string): string {
-  return `github:${owner}/${repo}//${path || '.'}`
+  return path && path !== '.'
+    ? `github:${owner}/${repo}/${path}`
+    : `github:${owner}/${repo}`
 }
 
 export function isRemoteUses(value: unknown): value is string {
@@ -53,8 +55,8 @@ export function matchesPackageSelector(key: string, selector: string): boolean {
     : `github:${selector}`
   return (
     key === normalized ||
-    key.startsWith(`${normalized}//`) ||
-    key.includes(`:${selector}//`)
+    key.startsWith(`${normalized}/`) ||
+    key.includes(`:${selector}/`)
   )
 }
 
@@ -71,7 +73,7 @@ export function matchesExternalSelector(
     remote.package === packageSelector ||
     fullName === value ||
     withPath === value ||
-    remote.package.startsWith(`${packageSelector}//`)
+    remote.package.startsWith(`${packageSelector}/`)
   )
 }
 

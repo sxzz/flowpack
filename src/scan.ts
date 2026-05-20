@@ -143,30 +143,28 @@ export async function resolveQueue(
   context: ScanContext,
 ): Promise<void> {
   const seen = new Set<string>()
+  const resolvedRefs = new Map<string, string>()
+  const warnings = new Set<string>()
 
   while (queue.length > 0) {
     const dependency = queue.shift()!
-    const existing = lockfile.packages[dependency.package]
     const shouldRefresh = refreshPackages.has(dependency.package)
-    if (
-      existing &&
-      !shouldRefresh &&
-      seen.has(`${dependency.package}@${existing.resolved}`)
-    ) {
-      continue
-    }
-
     const previousPackage = previous.packages[dependency.package]
     const resolved =
       previousPackage?.resolved && !shouldRefresh
         ? previousPackage.resolved
-        : await resolveDependencyRef(dependency, github, context)
+        : await resolveDependencyRef(dependency, github, context, resolvedRefs)
+    const seenKey = `${dependency.package}@${resolved}`
+    if (seen.has(seenKey)) {
+      continue
+    }
 
     const scanned = await scanRemotePackage(
       dependency.remote,
       resolved,
       github,
       context,
+      warnings,
     )
     lockfile.packages[dependency.package] = {
       ...scanned,
@@ -174,7 +172,7 @@ export async function resolveQueue(
       resolved,
     }
 
-    seen.add(`${dependency.package}@${resolved}`)
+    seen.add(seenKey)
     queue.push(
       ...scanned.dependencies.map((item) => ({
         ...item,
@@ -189,6 +187,7 @@ async function scanRemotePackage(
   resolved: string,
   github: GitHubClient,
   context: ScanContext,
+  warnings: Set<string>,
 ): Promise<Omit<LockPackage, 'requested' | 'resolved'>> {
   if (remote.kind === 'reusable-workflow') {
     if (isExternal(remote, context.external)) {
@@ -237,8 +236,10 @@ async function scanRemotePackage(
   const using =
     typeof runs?.using === 'string' ? runs.using.toLowerCase() : undefined
   if (using !== 'composite') {
-    context.stderr?.write(
-      `${styleText('yellow', `Warning: Unsupported action type for ${remote.owner}/${remote.repo}/${remote.path}@${resolved}: ${using ?? 'unknown'}; marking external`)}\n`,
+    warnOnce(
+      context,
+      warnings,
+      `Unsupported action type for ${remote.owner}/${remote.repo}/${remote.path}@${resolved}: ${using ?? 'unknown'}; marking external`,
     )
     return {
       ...externalPackage(remote, 'external-action'),
@@ -265,15 +266,38 @@ function resolveDependencyRef(
   dependency: ResolvedDependency,
   github: GitHubClient,
   context: ScanContext,
+  resolvedRefs: Map<string, string>,
 ): Promise<string> {
+  const key = `${dependency.package}@${dependency.requested}`
+  const resolved = resolvedRefs.get(key)
+  if (resolved) {
+    return Promise.resolve(resolved)
+  }
   context.stdout?.write(
     `Resolving ${dependency.remote.owner}/${dependency.remote.repo}${dependency.remote.path === '.' ? '' : `/${dependency.remote.path}`}@${dependency.requested}\n`,
   )
-  return github.resolveRef(
-    dependency.remote.owner,
-    dependency.remote.repo,
-    dependency.requested,
-  )
+  return github
+    .resolveRef(
+      dependency.remote.owner,
+      dependency.remote.repo,
+      dependency.requested,
+    )
+    .then((value) => {
+      resolvedRefs.set(key, value)
+      return value
+    })
+}
+
+function warnOnce(
+  context: ScanContext,
+  warnings: Set<string>,
+  message: string,
+): void {
+  if (warnings.has(message)) {
+    return
+  }
+  warnings.add(message)
+  context.stderr?.write(`${styleText('yellow', `Warning: ${message}`)}\n`)
 }
 
 function isExternal(remote: RemoteRef, selectors: string[]): boolean {
@@ -320,18 +344,19 @@ export async function readActionMetadata(
 }
 
 function parseRemoteUsesFromDependency(dependency: LockDependency): RemoteRef {
-  const match = /^github:([^/]+)\/([^/]+)\/\/(.+)$/u.exec(dependency.package)
+  const match = /^github:([^/]+)\/([^/]+)(?:\/(.+))?$/u.exec(dependency.package)
   if (!match) {
     throw new Error(`Unsupported package key: ${dependency.package}`)
   }
   const [, owner, repo, packagePath] = match
-  const kind = packagePath!.startsWith('.github/workflows/')
+  const remotePath = packagePath ?? '.'
+  const kind = remotePath.startsWith('.github/workflows/')
     ? 'reusable-workflow'
     : 'action'
   return {
     owner: owner!,
     repo: repo!,
-    path: packagePath!,
+    path: remotePath,
     ref: dependency.requested,
     package: dependency.package,
     kind,

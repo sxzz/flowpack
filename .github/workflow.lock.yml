@@ -3,23 +3,23 @@ entries:
   .github/workflows/src/release-commit.yml:
     output: .github/workflows/release-commit.yml
     dependencies:
-      - package: github:sxzz/workflows//.github/workflows/release-commit.yml
+      - package: github:sxzz/workflows/.github/workflows/release-commit.yml
         requested: main
         foundAt: .github/workflows/src/release-commit.yml#jobs.release.uses
   .github/workflows/src/release.yml:
     output: .github/workflows/release.yml
     dependencies:
-      - package: github:sxzz/workflows//.github/workflows/release.yml
+      - package: github:sxzz/workflows/.github/workflows/release.yml
         requested: main
         foundAt: .github/workflows/src/release.yml#jobs.release.uses
   .github/workflows/src/unit-test.yml:
     output: .github/workflows/unit-test.yml
     dependencies:
-      - package: github:sxzz/workflows//.github/workflows/unit-test.yml
+      - package: github:sxzz/workflows/.github/workflows/unit-test.yml
         requested: main
         foundAt: .github/workflows/src/unit-test.yml#jobs.unit-test.uses
 packages:
-  github:actions/checkout//.:
+  github:actions/checkout:
     source: github
     owner: actions
     repo: checkout
@@ -30,7 +30,7 @@ packages:
     dependencies: []
     requested: de0fac2e4500dabe0009e67214ff5f5447ce83dd
     resolved: de0fac2e4500dabe0009e67214ff5f5447ce83dd
-  github:actions/setup-node//.:
+  github:actions/setup-node:
     source: github
     owner: actions
     repo: setup-node
@@ -41,7 +41,7 @@ packages:
     dependencies: []
     requested: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
     resolved: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
-  github:pnpm/action-setup//.:
+  github:pnpm/action-setup:
     source: github
     owner: pnpm
     repo: action-setup
@@ -52,7 +52,7 @@ packages:
     dependencies: []
     requested: 0e279bb959325dab635dd2c09392533439d90093
     resolved: 0e279bb959325dab635dd2c09392533439d90093
-  github:sxzz/workflows//.github/workflows/release-commit.yml:
+  github:sxzz/workflows/.github/workflows/release-commit.yml:
     source: github
     owner: sxzz
     repo: workflows
@@ -60,12 +60,12 @@ packages:
     type: reusable-workflow
     contentDigest: sha256:06630f463980c0f109857593e1205d302aaca93766e6337790c7f319976b9da5
     dependencies:
-      - package: github:sxzz/workflows//setup-js
+      - package: github:sxzz/workflows/setup-js
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release-commit.yml#jobs.release.steps[0].uses
     requested: main
     resolved: e10bbede8ba835eaee8df633bb472d303aba8509
-  github:sxzz/workflows//.github/workflows/release.yml:
+  github:sxzz/workflows/.github/workflows/release.yml:
     source: github
     owner: sxzz
     repo: workflows
@@ -73,12 +73,12 @@ packages:
     type: reusable-workflow
     contentDigest: sha256:716fb2eae20dfe7e87c92eabd1b4be35deeb2f6fca8f999f63412d26904abbf8
     dependencies:
-      - package: github:sxzz/workflows//setup-js
+      - package: github:sxzz/workflows/setup-js
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release.yml#jobs.release.steps[0].uses
     requested: main
     resolved: e10bbede8ba835eaee8df633bb472d303aba8509
-  github:sxzz/workflows//.github/workflows/unit-test.yml:
+  github:sxzz/workflows/.github/workflows/unit-test.yml:
     source: github
     owner: sxzz
     repo: workflows
@@ -86,12 +86,12 @@ packages:
     type: reusable-workflow
     contentDigest: sha256:0cff202ed73f1bd09e8e8727ec40aed870f0159d3d9e9e7e910bf89c369c8d3c
     dependencies:
-      - package: github:sxzz/workflows//setup-js
+      - package: github:sxzz/workflows/setup-js
         requested: main
         foundAt: sxzz/workflows/.github/workflows/unit-test.yml#jobs.lint.steps[0].uses
     requested: main
     resolved: e10bbede8ba835eaee8df633bb472d303aba8509
-  github:sxzz/workflows//setup-js:
+  github:sxzz/workflows/setup-js:
     source: github
     owner: sxzz
     repo: workflows
@@ -99,13 +99,13 @@ packages:
     type: composite
     contentDigest: sha256:ee6696753c61e7206ab75bc50a88f8854a2ea5ceb668cbc2d813658bef7aa993
     dependencies:
-      - package: github:actions/checkout//.
+      - package: github:actions/checkout
         requested: de0fac2e4500dabe0009e67214ff5f5447ce83dd
         foundAt: sxzz/workflows/setup-js#runs.steps[0].uses
-      - package: github:pnpm/action-setup//.
+      - package: github:pnpm/action-setup
         requested: 0e279bb959325dab635dd2c09392533439d90093
         foundAt: sxzz/workflows/setup-js#runs.steps[1].uses
-      - package: github:actions/setup-node//.
+      - package: github:actions/setup-node
         requested: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         foundAt: sxzz/workflows/setup-js#runs.steps[2].uses
     requested: main

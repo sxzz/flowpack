@@ -38,6 +38,14 @@ export async function pack(
   }
 
   const scanResult = await scan(options)
+  return packScanned(scanResult, options)
+}
+
+export async function packScanned(
+  scanResult: CommandResult,
+  options: FlowpackOptions = {},
+): Promise<CommandResult> {
+  const cwd = resolveCwd(options.cwd)
   const github = options.github ?? new HttpGitHubClient()
 
   for (const entry of scanResult.entries) {

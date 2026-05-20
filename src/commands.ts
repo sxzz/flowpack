@@ -1,6 +1,6 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { pack, verify } from './pack.ts'
+import { pack, packScanned, verify } from './pack.ts'
 import { scan } from './scan.ts'
 import {
   discoverConfig,
@@ -27,9 +27,9 @@ export async function update(options: UpdateOptions = {}): Promise<void> {
   const cwd = resolveCwd(options.cwd)
   const current = await readLockfile(cwd)
   const refreshPackages = selectRefreshPackages(current, options.packageName)
-  await scan({ ...options, cwd, refreshPackages })
+  const scanResult = await scan({ ...options, cwd, refreshPackages })
   if (!options.lockfileOnly) {
-    await pack(options)
+    await packScanned(scanResult, options)
   }
 }
 
