@@ -124,7 +124,7 @@ function appendDependencyTree(
     const last = index === dependencies.length - 1
     const item = lockfile.packages[dependency.package]
     const label = item
-      ? `${item.owner}/${item.repo}${item.path === '.' ? '' : `/${item.path}`}@${item.requested} (${item.resolved})`
+      ? formatPackageTreeLabel(item)
       : `${dependency.package}@${dependency.requested}`
     lines.push(`${prefix}${last ? '└─' : '├─'} ${label}`)
     if (item) {
@@ -136,6 +136,20 @@ function appendDependencyTree(
       )
     }
   })
+}
+
+function formatPackageTreeLabel(item: {
+  owner: string
+  path: string
+  repo: string
+  requested: string
+  resolved: string
+}): string {
+  const name = `${item.owner}/${item.repo}${item.path === '.' ? '' : `/${item.path}`}`
+  const requested = `${name}@${item.requested}`
+  return item.requested === item.resolved
+    ? requested
+    : `${requested} (${item.resolved})`
 }
 
 function collectWhyPaths(

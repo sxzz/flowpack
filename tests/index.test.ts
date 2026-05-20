@@ -551,6 +551,8 @@ entries:
     dependencies:
       - package: github:acme/root
         requested: main
+      - package: github:actions/checkout
+        requested: de0fac2e4500dabe0009e67214ff5f5447ce83dd
 packages:
   github:acme/root:
     source: github
@@ -562,11 +564,28 @@ packages:
     type: composite
     contentDigest: sha256:old
     dependencies: []
+  github:actions/checkout:
+    source: github
+    owner: actions
+    repo: checkout
+    path: .
+    requested: de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    resolved: de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    type: external-action
+    external: true
+    contentDigest: external
+    dependencies: []
 `,
     })
 
     const treeOutput = await tree({ cwd })
     expect(treeOutput).toContain('acme/root@main (old)')
+    expect(treeOutput).toContain(
+      'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd\n',
+    )
+    expect(treeOutput).not.toContain(
+      'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd (de0fac2e4500dabe0009e67214ff5f5447ce83dd)',
+    )
     const whyOutput = await why('acme/root', { cwd })
     expect(whyOutput).toContain('.github/workflows/src/ci.yml')
 
