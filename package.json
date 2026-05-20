@@ -1,0 +1,67 @@
+{
+  "name": "flowpack",
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@11.1.3",
+  "description": "placeholder",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/sxzz",
+  "homepage": "https://github.com/sxzz/flowpack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sxzz/flowpack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sxzz/flowpack/issues"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./cli": "./dist/cli.mjs",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "flowpack": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "lint": "eslint --cache .",
+    "lint:fix": "pnpm run lint --fix",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest",
+    "typecheck": "tsgo --noEmit",
+    "format": "prettier --cache --write .",
+    "release": "bumpp",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@actions/expressions": "^0.3.57",
+    "@actions/workflow-parser": "^0.3.57",
+    "cac": "^7.0.0",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@sxzz/eslint-config": "^8.1.0",
+    "@sxzz/prettier-config": "^2.3.1",
+    "@types/node": "^25.9.0",
+    "@typescript/native-preview": "7.0.0-dev.20260519.1",
+    "bumpp": "^11.1.0",
+    "eslint": "^10.4.0",
+    "prettier": "^3.8.3",
+    "tsdown": "^0.22.0",
+    "tsdown-preset-sxzz": "^0.6.0",
+    "tsnapi": "^0.3.3",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.0-beta.3"
+  },
+  "prettier": "@sxzz/prettier-config"
+}

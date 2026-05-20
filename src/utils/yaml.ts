@@ -1,0 +1,115 @@
+import { parse, stringify } from 'yaml'
+
+export type YamlMap = Record<string, unknown>
+
+export function parseYamlMap(source: string, file: string): YamlMap {
+  const value = parse(source) as unknown
+  if (!isRecord(value)) {
+    throw new TypeError(`${file} must contain a YAML mapping`)
+  }
+  return value
+}
+
+export function stringifyYaml(value: unknown): string {
+  return stringify(value, {
+    lineWidth: 0,
+    minContentWidth: 0,
+    singleQuote: true,
+  })
+}
+
+export function stringifyWorkflowYaml(value: unknown): string {
+  return formatWorkflowYaml(stringifyYaml(normalizeWorkflowYamlValue(value)))
+}
+
+export function isRecord(value: unknown): value is YamlMap {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+export function asRecord(value: unknown): YamlMap | undefined {
+  return isRecord(value) ? value : undefined
+}
+
+export function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : []
+}
+
+function formatWorkflowYaml(source: string): string {
+  const lines = source.trimEnd().split('\n')
+  const output: string[] = []
+  let stepsIndent: number | undefined
+  let stepItemIndent: number | undefined
+
+  for (const line of lines) {
+    const indent = leadingSpaces(line)
+    const trimmed = line.trim()
+    const isTopLevelKey = indent === 0 && /^[\w-]+:/u.test(line)
+
+    if (stepsIndent !== undefined && trimmed && indent <= stepsIndent) {
+      pushBlankLine(output)
+      stepsIndent = undefined
+      stepItemIndent = undefined
+    }
+
+    if (isTopLevelKey && output.length > 0) {
+      pushBlankLine(output)
+    }
+
+    if (
+      stepsIndent !== undefined &&
+      stepItemIndent !== undefined &&
+      indent === stepItemIndent &&
+      trimmed.startsWith('- ')
+    ) {
+      pushBlankLine(output)
+    }
+
+    output.push(line)
+
+    if (/^steps:\s*$/u.test(trimmed)) {
+      stepsIndent = indent
+      stepItemIndent = undefined
+      continue
+    }
+    if (
+      stepsIndent !== undefined &&
+      indent > stepsIndent &&
+      trimmed.startsWith('- ')
+    ) {
+      stepItemIndent ??= indent
+    }
+  }
+
+  return `${output.join('\n')}\n`
+}
+
+function leadingSpaces(value: string): number {
+  return value.length - value.trimStart().length
+}
+
+function pushBlankLine(lines: string[]): void {
+  if (lines.length > 0 && lines.at(-1) !== '') {
+    lines.push('')
+  }
+}
+
+function normalizeWorkflowYamlValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeWorkflowYamlValue(item))
+  }
+  if (isRecord(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [
+        key,
+        normalizeWorkflowYamlValue(item),
+      ]),
+    )
+  }
+  if (value === 'true') {
+    return true
+  }
+  if (value === 'false') {
+    return false
+  }
+  return value
+}

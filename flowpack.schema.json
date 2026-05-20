@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/sxzz/flowpack/main/flowpack.schema.json",
+  "title": "flowpack configuration",
+  "description": "Configuration for flowpack.yml.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "description": "Optional JSON Schema URL for editor integration.",
+      "type": "string"
+    },
+    "entries": {
+      "description": "Explicit source workflow to generated workflow mappings. When omitted, flowpack discovers .github/workflows/src/*.yml and .github/workflows/src/*.yaml.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "output"],
+        "properties": {
+          "source": {
+            "description": "Authored source workflow path.",
+            "type": "string",
+            "minLength": 1,
+            "examples": [".github/workflows/src/ci.yml"]
+          },
+          "output": {
+            "description": "Generated workflow output path.",
+            "type": "string",
+            "minLength": 1,
+            "examples": [".github/workflows/ci.yml"]
+          }
+        }
+      }
+    },
+    "external": {
+      "description": "GitHub actions or reusable workflows to pin in the lockfile but not bundle. Selectors may be owner/repo, owner/repo/path, or github:owner/repo//path.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(github:[^\\s]+|[\\w.-]+/[\\w.-]+(?:/[^\\s]+)?)$",
+        "examples": [
+          "actions/checkout",
+          "owner/repo/path",
+          "github:owner/repo//path"
+        ]
+      }
+    }
+  }
+}
