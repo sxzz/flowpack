@@ -1,5 +1,5 @@
 {
-  "name": "flowpack",
+  "name": "actionspack",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@11.1.3",
@@ -7,13 +7,13 @@
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/sxzz",
-  "homepage": "https://github.com/sxzz/flowpack#readme",
+  "homepage": "https://github.com/sxzz/actionspack#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sxzz/flowpack.git"
+    "url": "git+https://github.com/sxzz/actionspack.git"
   },
   "bugs": {
-    "url": "https://github.com/sxzz/flowpack/issues"
+    "url": "https://github.com/sxzz/actionspack/issues"
   },
   "exports": {
     ".": "./dist/index.mjs",
@@ -21,7 +21,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "flowpack": "./dist/cli.mjs"
+    "actionspack": "./dist/cli.mjs"
   },
   "files": [
     "dist"

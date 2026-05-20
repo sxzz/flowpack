@@ -80,7 +80,10 @@ function parseCompositeRunExpression(value: string): string | undefined {
   steps:
     - run: ${JSON.stringify(value)}
 `
-  const result = parseActionTemplate(content, 'flowpack-substitute/action.yml')
+  const result = parseActionTemplate(
+    content,
+    'actionspack-substitute/action.yml',
+  )
   if (!result.value) {
     return undefined
   }

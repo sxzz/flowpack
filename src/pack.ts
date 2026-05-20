@@ -20,8 +20,8 @@ import { normalizeInputValue, substituteValue } from './utils/substitute.ts'
 import { parseActionMap, parseWorkflowMap } from './utils/workflow-parser.ts'
 import { asArray, asRecord, stringifyWorkflowYaml } from './utils/yaml.ts'
 import type {
+  ActionspackOptions,
   CommandResult,
-  FlowpackOptions,
   GitHubClient,
   Lockfile,
   LockPackage,
@@ -29,7 +29,7 @@ import type {
 } from './types.ts'
 
 export async function pack(
-  options: FlowpackOptions = {},
+  options: ActionspackOptions = {},
 ): Promise<CommandResult> {
   const cwd = resolveCwd(options.cwd)
   const config = await discoverConfig(cwd, options)
@@ -43,7 +43,7 @@ export async function pack(
 
 export async function packScanned(
   scanResult: CommandResult,
-  options: FlowpackOptions = {},
+  options: ActionspackOptions = {},
 ): Promise<CommandResult> {
   const cwd = resolveCwd(options.cwd)
   const github = options.github ?? new HttpGitHubClient()
@@ -62,7 +62,7 @@ export async function packScanned(
 }
 
 export async function verify(
-  options: FlowpackOptions = {},
+  options: ActionspackOptions = {},
 ): Promise<CommandResult> {
   const cwd = resolveCwd(options.cwd)
   const config = await discoverConfig(cwd, options)

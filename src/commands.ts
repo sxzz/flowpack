@@ -11,9 +11,9 @@ import {
 import { matchesPackageSelector } from './utils/ref.ts'
 import { stringifyYaml } from './utils/yaml.ts'
 import type {
+  ActionspackOptions,
   DiffOptions,
   DiffResult,
-  FlowpackOptions,
   LockDependency,
   Lockfile,
   UpdateOptions,
@@ -33,7 +33,7 @@ export async function update(options: UpdateOptions = {}): Promise<void> {
   }
 }
 
-export async function tree(options: FlowpackOptions = {}): Promise<string> {
+export async function tree(options: ActionspackOptions = {}): Promise<string> {
   const lockfile = await readLockfile(options.cwd)
   const lines: string[] = []
   for (const [source, entry] of Object.entries(lockfile.entries)) {
@@ -47,7 +47,7 @@ export async function tree(options: FlowpackOptions = {}): Promise<string> {
 
 export async function why(
   packageName: string,
-  options: FlowpackOptions = {},
+  options: ActionspackOptions = {},
 ): Promise<string> {
   const lockfile = await readLockfile(options.cwd)
   const matches = new Set(
@@ -91,7 +91,7 @@ export async function diff(
 }
 
 export async function verifyEntryConfig(
-  options: FlowpackOptions = {},
+  options: ActionspackOptions = {},
 ): Promise<void> {
   const config = await discoverConfig(options.cwd)
   if (config.entries.length === 0) {

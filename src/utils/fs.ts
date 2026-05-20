@@ -4,8 +4,8 @@ import process from 'node:process'
 import { parseWorkflowMap } from './workflow-parser.ts'
 import { parseYamlMap, stringifyWorkflowYaml, stringifyYaml } from './yaml.ts'
 import type {
-  FlowpackConfig,
-  FlowpackOptions,
+  ActionspackConfig,
+  ActionspackOptions,
   Lockfile,
   WorkflowEntry,
 } from '../types.ts'
@@ -49,23 +49,25 @@ export async function writeYamlFile(
 
 export async function discoverConfig(
   cwd?: string,
-  overrides: Pick<FlowpackOptions, 'entries' | 'external'> = {},
-): Promise<FlowpackConfig> {
+  overrides: Pick<ActionspackOptions, 'entries' | 'external'> = {},
+): Promise<ActionspackConfig> {
   const root = resolveCwd(cwd)
-  const configPath = path.join(root, 'flowpack.yml')
-  let config: FlowpackConfig
+  const configPath = path.join(root, 'actionspack.yml')
+  let config: ActionspackConfig
   if (await fileExists(configPath)) {
     const rawConfig = await readYamlFile(configPath)
     const entries = Array.isArray(rawConfig.entries) ? rawConfig.entries : []
     config = {
       entries: entries.map((entry) => {
         if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
-          throw new TypeError('flowpack.yml entries must be mappings')
+          throw new TypeError('actionspack.yml entries must be mappings')
         }
         const source = Reflect.get(entry, 'source')
         const output = Reflect.get(entry, 'output')
         if (typeof source !== 'string' || typeof output !== 'string') {
-          throw new TypeError('flowpack.yml entries require source and output')
+          throw new TypeError(
+            'actionspack.yml entries require source and output',
+          )
         }
         return { source, output }
       }),
@@ -81,7 +83,7 @@ export async function discoverConfig(
   }
 }
 
-async function discoverDefaultConfig(root: string): Promise<FlowpackConfig> {
+async function discoverDefaultConfig(root: string): Promise<ActionspackConfig> {
   const sourceDir = path.join(root, DEFAULT_SOURCE_DIR)
   if (!(await fileExists(sourceDir))) {
     return { entries: [], external: [] }
@@ -104,8 +106,8 @@ async function discoverDefaultConfig(root: string): Promise<FlowpackConfig> {
 }
 
 function normalizeConfigOverrides(
-  overrides: Pick<FlowpackOptions, 'entries' | 'external'>,
-): Partial<FlowpackConfig> {
+  overrides: Pick<ActionspackOptions, 'entries' | 'external'>,
+): Partial<ActionspackConfig> {
   return {
     ...(overrides.entries ? { entries: overrides.entries } : {}),
     ...(overrides.external ? { external: overrides.external } : {}),

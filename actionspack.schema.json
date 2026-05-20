@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/sxzz/flowpack/main/flowpack.schema.json",
-  "title": "flowpack configuration",
-  "description": "Configuration for flowpack.yml.",
+  "$id": "https://raw.githubusercontent.com/sxzz/actionspack/main/actionspack.schema.json",
+  "title": "actionspack configuration",
+  "description": "Configuration for actionspack.yml.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -11,7 +11,7 @@
       "type": "string"
     },
     "entries": {
-      "description": "Explicit source workflow to generated workflow mappings. When omitted, flowpack discovers .github/workflows/src/*.yml and .github/workflows/src/*.yaml.",
+      "description": "Explicit source workflow to generated workflow mappings. When omitted, actionspack discovers .github/workflows/src/*.yml and .github/workflows/src/*.yaml.",
       "type": "array",
       "items": {
         "type": "object",

@@ -2,7 +2,7 @@ import type { GitHubClient } from './utils/github.ts'
 
 export type { GitHubClient }
 
-export interface FlowpackOptions {
+export interface ActionspackOptions {
   cwd?: string
   entries?: WorkflowEntry[]
   external?: string[]
@@ -20,7 +20,7 @@ export interface WorkflowEntry {
   output: string
 }
 
-export interface FlowpackConfig {
+export interface ActionspackConfig {
   entries: WorkflowEntry[]
   external: string[]
 }
@@ -69,16 +69,16 @@ export interface RemoteRef {
   kind: 'action' | 'reusable-workflow'
 }
 
-export interface ScanOptions extends FlowpackOptions {
+export interface ScanOptions extends ActionspackOptions {
   refreshPackages?: Set<string>
 }
 
-export interface UpdateOptions extends FlowpackOptions {
+export interface UpdateOptions extends ActionspackOptions {
   packageName?: string
   lockfileOnly?: boolean
 }
 
-export interface DiffOptions extends FlowpackOptions {
+export interface DiffOptions extends ActionspackOptions {
   json?: boolean
 }
 

@@ -11,11 +11,11 @@ export {
 export { assertNoRemoteUses, packWorkflow } from './pack.ts'
 export { collectStepDependencies, collectWorkflowDependencies } from './scan.ts'
 export type {
+  ActionspackConfig,
+  ActionspackOptions,
   CommandResult,
   DiffOptions,
   DiffResult,
-  FlowpackConfig,
-  FlowpackOptions,
   GitHubClient,
   LockDependency,
   LockEntry,

@@ -31,7 +31,7 @@ export class HttpGitHubClient implements GitHubClient {
 
   constructor(
     token: string | undefined = process.env.GITHUB_TOKEN,
-    cacheDir: string = path.join(tmpdir(), 'flowpack-github-cache'),
+    cacheDir: string = path.join(tmpdir(), 'actionspack-github-cache'),
   ) {
     this.#cacheDir = cacheDir
     this.#token = token
@@ -105,7 +105,7 @@ export class HttpGitHubClient implements GitHubClient {
   ): Promise<T | undefined> {
     const headers: Record<string, string> = {
       accept: 'application/vnd.github+json',
-      'user-agent': 'flowpack',
+      'user-agent': 'actionspack',
       'x-github-api-version': '2022-11-28',
     }
     if (this.#token) {

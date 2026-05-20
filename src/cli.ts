@@ -4,7 +4,7 @@ import { styleText } from 'node:util'
 import { cac } from 'cac'
 import pkg from '../package.json' with { type: 'json' }
 import { diff, pack, scan, tree, update, verify, why } from './commands.ts'
-import type { FlowpackOptions, WorkflowEntry } from './types.ts'
+import type { ActionspackOptions, WorkflowEntry } from './types.ts'
 
 const cli = cac(pkg.name)
 
@@ -130,7 +130,7 @@ async function main(): Promise<void> {
 
 function normalizeConfigFlags(
   flags: ConfigFlags,
-): Pick<FlowpackOptions, 'entries' | 'external'> {
+): Pick<ActionspackOptions, 'entries' | 'external'> {
   return {
     ...(flags.entry ? { entries: normalizeEntries(flags.entry) } : {}),
     ...(flags.external
@@ -156,6 +156,6 @@ function normalizeStringList(value: string | string[]): string[] {
 
 main().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error)
-  process.stderr.write(`${styleText('red', `flowpack: ${message}`)}\n`)
+  process.stderr.write(`${styleText('red', `actionspack: ${message}`)}\n`)
   process.exitCode = 1
 })

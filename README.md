@@ -1,10 +1,10 @@
-# flowpack
+# actionspack
 
 [![Open on npmx][npmx-version-src]][npmx-href]
 [![npm downloads][npmx-downloads-src]][npmx-href]
 [![Unit Test][unit-test-src]][unit-test-href]
 
-`flowpack` is a lockfile-first GitHub Actions workflow packer. It lets you
+`actionspack` is a lockfile-first GitHub Actions workflow packer. It lets you
 author workflows in `.github/workflows/src/`, lock every remote workflow/action
 dependency in `.github/workflow.lock.yml`, and generate pinned workflows in
 `.github/workflows/`.
@@ -16,7 +16,7 @@ dependencies instead of being bundled.
 ## Install
 
 ```bash
-npm i flowpack
+npm i actionspack
 ```
 
 ## Usage
@@ -38,35 +38,35 @@ jobs:
 Then run:
 
 ```bash
-npx flowpack
+npx actionspack
 ```
 
-`flowpack` defaults to `flowpack pack`. It writes:
+`actionspack` defaults to `actionspack pack`. It writes:
 
 - `.github/workflow.lock.yml`
 - `.github/workflows/ci.yml`
 
 Generated workflows are safe to commit. Existing lockfile SHAs are reused until
-you explicitly run `flowpack update`.
+you explicitly run `actionspack update`.
 
 ## Commands
 
 ```bash
-flowpack pack
+actionspack pack
 ```
 
 Scan source workflows, resolve missing dependencies, update the lockfile, and
 write generated workflows.
 
 ```bash
-flowpack scan
+actionspack scan
 ```
 
 Update the lockfile graph shape only. This adds newly discovered dependencies
 and removes unreachable ones without refreshing existing SHAs.
 
 ```bash
-flowpack update [package]
+actionspack update [package]
 ```
 
 Refresh all locked dependencies, or only the selected package. By default this
@@ -74,17 +74,17 @@ also packs workflows. Use `--lockfile-only` to update only
 `.github/workflow.lock.yml`.
 
 ```bash
-flowpack verify
+actionspack verify
 ```
 
 Check that generated workflows are current and contain no unsupported unpinned
 remote references.
 
 ```bash
-flowpack tree
-flowpack why <package>
-flowpack diff
-flowpack diff --json
+actionspack tree
+actionspack why <package>
+actionspack diff
+actionspack diff --json
 ```
 
 Inspect the lockfile dependency tree, explain why a package is present, or
@@ -92,14 +92,14 @@ compare the current lockfile with `HEAD`.
 
 ## Configuration
 
-`flowpack.yml` is optional. Without it, `flowpack` discovers
+`actionspack.yml` is optional. Without it, `actionspack` discovers
 `.github/workflows/src/*.yml` and `.github/workflows/src/*.yaml`, then writes
 matching generated workflows to `.github/workflows/*.yml`.
 
 Use explicit entries when you need custom paths:
 
 ```yaml
-$schema: ./flowpack.schema.json
+$schema: ./actionspack.schema.json
 
 entries:
   - source: .github/workflows/src/ci.yml
@@ -117,7 +117,7 @@ external:
 The same configuration can be supplied through CLI flags:
 
 ```bash
-flowpack pack \
+actionspack pack \
   --entry .github/workflows/src/ci.yml:.github/workflows/ci.yml \
   --external actions/checkout
 ```
@@ -138,7 +138,7 @@ yet. They are pinned to locked SHAs as external dependencies.
 ## API
 
 ```ts
-import { diff, pack, scan, tree, update, verify, why } from 'flowpack'
+import { diff, pack, scan, tree, update, verify, why } from 'actionspack'
 
 await pack()
 await update({ packageName: 'owner/repo', lockfileOnly: true })
@@ -159,8 +159,8 @@ await verify()
 
 <!-- Badges -->
 
-[npmx-version-src]: https://npmx.dev/api/registry/badge/version/flowpack
-[npmx-downloads-src]: https://npmx.dev/api/registry/badge/downloads-month/flowpack
-[npmx-href]: https://npmx.dev/flowpack
-[unit-test-src]: https://github.com/sxzz/flowpack/actions/workflows/unit-test.yml/badge.svg
-[unit-test-href]: https://github.com/sxzz/flowpack/actions/workflows/unit-test.yml
+[npmx-version-src]: https://npmx.dev/api/registry/badge/version/actionspack
+[npmx-downloads-src]: https://npmx.dev/api/registry/badge/downloads-month/actionspack
+[npmx-href]: https://npmx.dev/actionspack
+[unit-test-src]: https://github.com/sxzz/actionspack/actions/workflows/unit-test.yml/badge.svg
+[unit-test-href]: https://github.com/sxzz/actionspack/actions/workflows/unit-test.yml

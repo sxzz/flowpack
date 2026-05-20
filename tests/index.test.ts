@@ -53,7 +53,7 @@ class TestOutput {
   }
 }
 
-describe('flowpack', () => {
+describe('actionspack', () => {
   it('simplifies static format calls inside expressions', () => {
     expect(
       substituteString(
@@ -412,7 +412,7 @@ jobs:
 
   it('keeps configured external actions pinned instead of bundling them', async () => {
     const cwd = await fixtureRepo({
-      'flowpack.yml': `
+      'actionspack.yml': `
 external:
   - acme/root
 entries:
@@ -468,7 +468,7 @@ jobs:
   })
 
   it('caches GitHub file reads by sha and path in a temporary directory', async () => {
-    const cacheDir = await mkdtemp(path.join(tmpdir(), 'flowpack-cache-'))
+    const cacheDir = await mkdtemp(path.join(tmpdir(), 'actionspack-cache-'))
     const originalFetch = globalThis.fetch
     let calls = 0
     globalThis.fetch = (() => {
@@ -560,7 +560,7 @@ packages:
 })
 
 async function fixtureRepo(files: Record<string, string>): Promise<string> {
-  const cwd = await mkdtemp(path.join(tmpdir(), 'flowpack-'))
+  const cwd = await mkdtemp(path.join(tmpdir(), 'actionspack-'))
   for (const [file, content] of Object.entries(files)) {
     const target = path.join(cwd, file)
     await import('node:fs/promises').then(({ mkdir }) =>
