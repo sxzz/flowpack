@@ -76,6 +76,19 @@ git diff
 Review the dependency SHA changes in `.github/workflow.lock.yml` and the
 resulting generated workflow changes before committing.
 
+### VS Code
+
+Generated workflows should not be edited by hand. Consider marking them as
+read-only in your workspace settings:
+
+```json
+{
+  "files.readonlyInclude": {
+    ".github/workflows/*.yml": true
+  }
+}
+```
+
 ## Commands
 
 ```bash
