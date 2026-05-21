@@ -64,7 +64,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release-commit.yml#jobs.release.steps[0].uses
     requested: main
-    resolved: e10bbede8ba835eaee8df633bb472d303aba8509
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
   github:sxzz/workflows/.github/workflows/release.yml:
     source: github
     owner: sxzz
@@ -77,7 +77,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release.yml#jobs.release.steps[0].uses
     requested: main
-    resolved: e10bbede8ba835eaee8df633bb472d303aba8509
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
   github:sxzz/workflows/.github/workflows/unit-test.yml:
     source: github
     owner: sxzz
@@ -90,7 +90,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/unit-test.yml#jobs.lint.steps[0].uses
     requested: main
-    resolved: e10bbede8ba835eaee8df633bb472d303aba8509
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
   github:sxzz/workflows/setup-js:
     source: github
     owner: sxzz
@@ -109,4 +109,4 @@ packages:
         requested: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         foundAt: sxzz/workflows/setup-js#runs.steps[2].uses
     requested: main
-    resolved: e10bbede8ba835eaee8df633bb472d303aba8509
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
