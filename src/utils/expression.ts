@@ -233,7 +233,7 @@ function evaluateStaticExpression(
     const data = new Evaluator(expr, expressionContext(values)).evaluate()
     return {
       data,
-      text: dataLiteral(data),
+      text: valueLiteral(dataValue(data)),
       truthy: truthy(data),
       value: dataValue(data),
     }
@@ -390,10 +390,6 @@ function dataValue(value: ExpressionData): unknown {
   return null
 }
 
-function dataLiteral(value: ExpressionData): string {
-  return valueLiteral(dataValue(value))
-}
-
 function replacementForIndexAccess(
   expr: IndexAccess,
   values: Record<string, unknown>,
@@ -517,7 +513,10 @@ function simplifyFormatString(
       return
     }
     if (arg.static) {
-      nextFormat += escapeFormatLiteral(arg.static.data.coerceString())
+      nextFormat += arg.static.data
+        .coerceString()
+        .replaceAll('{', '{{')
+        .replaceAll('}', '}}')
     } else {
       const nextIndex = nextArgs.push(arg.text) - 1
       nextFormat += `{${nextIndex}}`
@@ -527,8 +526,4 @@ function simplifyFormatString(
 
   nextFormat = nextFormat.trim()
   return { args: nextArgs, format: nextFormat }
-}
-
-function escapeFormatLiteral(value: string): string {
-  return value.replaceAll('{', '{{').replaceAll('}', '}}')
 }

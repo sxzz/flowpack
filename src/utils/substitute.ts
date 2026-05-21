@@ -50,7 +50,7 @@ export function substituteString(
   }
   try {
     const expr = parseExpression(expression)
-    const replacement = directReplacement(expr, values)
+    const replacement = valueForIndexAccess(expr, values)
     if (replacement !== undefined) {
       return replacement
     }
@@ -114,11 +114,4 @@ function findToken(
       : undefined
   }
   return
-}
-
-function directReplacement(
-  expr: ReturnType<typeof parseExpression>,
-  values: Record<string, unknown>,
-): unknown {
-  return valueForIndexAccess(expr, values)
 }

@@ -2,12 +2,6 @@ import type { RemoteRef } from '../types.ts'
 
 const REMOTE_USES_RE = /^[\w.-]+\/[\w.-]+(?:\/[^@\s]+)?@[^@\s]+$/
 
-export function packageKey(owner: string, repo: string, path: string): string {
-  return path && path !== '.'
-    ? `github:${owner}/${repo}/${path}`
-    : `github:${owner}/${repo}`
-}
-
 export function isRemoteUses(value: unknown): value is string {
   return typeof value === 'string' && REMOTE_USES_RE.test(value)
 }
@@ -44,7 +38,10 @@ export function parseRemoteUses(
     repo,
     path,
     ref,
-    package: packageKey(owner, repo, path),
+    package:
+      path && path !== '.'
+        ? `github:${owner}/${repo}/${path}`
+        : `github:${owner}/${repo}`,
     kind: inferredKind,
   }
 }

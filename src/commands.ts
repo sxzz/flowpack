@@ -2,12 +2,7 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { pack, packScanned, verify } from './pack.ts'
 import { scan } from './scan.ts'
-import {
-  discoverConfig,
-  LOCKFILE_PATH,
-  readLockfile,
-  resolveCwd,
-} from './utils/fs.ts'
+import { LOCKFILE_PATH, readLockfile, resolveCwd } from './utils/fs.ts'
 import { matchesPackageSelector } from './utils/ref.ts'
 import { stringifyYaml } from './utils/yaml.ts'
 import type {
@@ -66,10 +61,20 @@ export async function why(
     }
   }
 
-  const output =
-    paths.length === 0
-      ? `${packageName} is not reachable\n`
-      : `${packageName} is used by:\n\n${paths.map(formatPath).join('\n\n')}\n`
+  let output = `${packageName} is not reachable\n`
+  if (paths.length > 0) {
+    const formattedPaths = paths
+      .map((path) =>
+        path
+          .map(
+            (item, index) =>
+              `${'   '.repeat(index)}${index === 0 ? item : `└─ ${item}`}`,
+          )
+          .join('\n'),
+      )
+      .join('\n\n')
+    output = `${packageName} is used by:\n\n${formattedPaths}\n`
+  }
   options.stdout?.write(output)
   return output
 }
@@ -88,15 +93,6 @@ export async function diff(
   const output = formatDiff(result)
   options.stdout?.write(output)
   return output
-}
-
-export async function verifyEntryConfig(
-  options: ActionspackOptions = {},
-): Promise<void> {
-  const config = await discoverConfig(options.cwd)
-  if (config.entries.length === 0) {
-    throw new Error('No workflow entries found in .github/workflows/src')
-  }
 }
 
 function selectRefreshPackages(
@@ -170,15 +166,6 @@ function collectWhyPaths(
   item?.dependencies.forEach((child) =>
     collectWhyPaths(lockfile, child, matches, next, paths),
   )
-}
-
-function formatPath(path: string[]): string {
-  return path
-    .map(
-      (item, index) =>
-        `${'   '.repeat(index)}${index === 0 ? item : `└─ ${item}`}`,
-    )
-    .join('\n')
 }
 
 async function readHeadLockfile(cwd: string): Promise<Lockfile> {

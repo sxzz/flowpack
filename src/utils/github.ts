@@ -69,8 +69,9 @@ export class HttpGitHubClient implements GitHubClient {
       return cached
     }
 
+    const encodedPath = filePath.split('/').map(encodeURIComponent).join('/')
     const response = await this.#request<GitHubContentResponse>(
-      `/repos/${owner}/${repo}/contents/${encodeURIComponentPath(filePath)}?ref=${ref}`,
+      `/repos/${owner}/${repo}/contents/${encodedPath}?ref=${ref}`,
       true,
     )
 
@@ -126,8 +127,4 @@ export class HttpGitHubClient implements GitHubClient {
     }
     return (await response.json()) as T
   }
-}
-
-function encodeURIComponentPath(filePath: string): string {
-  return filePath.split('/').map(encodeURIComponent).join('/')
 }

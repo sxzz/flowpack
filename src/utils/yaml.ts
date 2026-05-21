@@ -46,7 +46,7 @@ function formatWorkflowYaml(source: string): string {
   let stepItemIndent: number | undefined
 
   for (const line of lines) {
-    const indent = leadingSpaces(line)
+    const indent = line.length - line.trimStart().length
     const trimmed = line.trim()
     const isTopLevelKey = indent === 0 && /^[\w-]+:/u.test(line)
 
@@ -86,10 +86,6 @@ function formatWorkflowYaml(source: string): string {
   }
 
   return `${output.join('\n')}\n`
-}
-
-function leadingSpaces(value: string): number {
-  return value.length - value.trimStart().length
 }
 
 function pushBlankLine(lines: string[]): void {

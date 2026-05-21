@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto'
-import path from 'node:path'
 import { styleText } from 'node:util'
 import {
   discoverConfig,
@@ -425,11 +424,4 @@ function prunePackages(lockfile: Lockfile): Record<string, LockPackage> {
 
 function digest(content: string): string {
   return `sha256:${createHash('sha256').update(content).digest('hex')}`
-}
-
-export function outputForSource(source: string): string {
-  return path.posix.join(
-    '.github/workflows',
-    path.posix.basename(source).replace(/\.ya?ml$/u, '.yml'),
-  )
 }

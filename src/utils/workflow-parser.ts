@@ -34,12 +34,8 @@ export function parseWorkflowMap(
   source: string,
   file: string,
 ): Record<string, unknown> {
-  return parseTemplateMap(
-    WORKFLOW_ROOT,
-    workflowSchemaForParser(),
-    source,
-    file,
-  )
+  workflowSchema ??= loadSchema('workflow-v1.0.min.json')
+  return parseTemplateMap(WORKFLOW_ROOT, workflowSchema, source, file)
 }
 
 export function parseActionMap(
@@ -130,11 +126,6 @@ export function templateTokenToValue(token: TemplateToken): unknown {
     return token.toString()
   }
   return token.toJSON()
-}
-
-function workflowSchemaForParser(): TemplateSchema {
-  workflowSchema ??= loadSchema('workflow-v1.0.min.json')
-  return workflowSchema
 }
 
 function actionSchemaForParser(): TemplateSchema {

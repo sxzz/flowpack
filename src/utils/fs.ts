@@ -38,12 +38,6 @@ export async function readYamlFile(
   return parseYamlMap(await readFile(file, 'utf8'), file)
 }
 
-export async function readWorkflowFile(
-  file: string,
-): Promise<Record<string, unknown>> {
-  return parseWorkflowMap(await readFile(file, 'utf8'), file)
-}
-
 export async function discoverConfig(
   cwd?: string,
   overrides: Pick<ActionspackOptions, 'entries' | 'external'> = {},
@@ -76,7 +70,8 @@ export async function discoverConfig(
 
   return {
     ...config,
-    ...normalizeConfigOverrides(overrides),
+    ...(overrides.entries ? { entries: overrides.entries } : {}),
+    ...(overrides.external ? { external: overrides.external } : {}),
   }
 }
 
@@ -102,15 +97,6 @@ async function discoverDefaultConfig(root: string): Promise<ActionspackConfig> {
   }
 }
 
-function normalizeConfigOverrides(
-  overrides: Pick<ActionspackOptions, 'entries' | 'external'>,
-): Partial<ActionspackConfig> {
-  return {
-    ...(overrides.entries ? { entries: overrides.entries } : {}),
-    ...(overrides.external ? { external: overrides.external } : {}),
-  }
-}
-
 function normalizeStringList(value: unknown): string[] {
   if (typeof value === 'string') {
     return [value]
@@ -121,26 +107,23 @@ function normalizeStringList(value: unknown): string[] {
   return value.filter((item) => typeof item === 'string')
 }
 
-export function readWorkflowEntry(
+export async function readWorkflowEntry(
   root: string,
   entry: WorkflowEntry,
 ): Promise<Record<string, unknown>> {
-  return readWorkflowFile(path.join(root, entry.source))
-}
-
-export function emptyLockfile(): Lockfile {
-  return {
-    lockfileVersion: 1,
-    entries: {},
-    packages: {},
-  }
+  const file = path.join(root, entry.source)
+  return parseWorkflowMap(await readFile(file, 'utf8'), file)
 }
 
 export async function readLockfile(cwd?: string): Promise<Lockfile> {
   const root = resolveCwd(cwd)
   const file = path.join(root, LOCKFILE_PATH)
   if (!(await fileExists(file))) {
-    return emptyLockfile()
+    return {
+      lockfileVersion: 1,
+      entries: {},
+      packages: {},
+    }
   }
   const value = await readYamlFile(file)
   return {

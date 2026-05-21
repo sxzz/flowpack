@@ -9,7 +9,7 @@ export function optimizeJob(
   job: Record<string, unknown>,
 ): Record<string, unknown> {
   const next = { ...job }
-  if (isEmptyNeeds(next.needs)) {
+  if (Array.isArray(next.needs) && next.needs.length === 0) {
     delete next.needs
   }
   if (staticIfValue(next.if) === true) {
@@ -55,8 +55,4 @@ function staticIfValue(value: unknown): StaticIfValue | undefined {
   }
   const trimmed = value.trim()
   return staticIfExpression(expressionBody(trimmed) ?? trimmed)
-}
-
-function isEmptyNeeds(value: unknown): boolean {
-  return Array.isArray(value) && value.length === 0
 }
