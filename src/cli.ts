@@ -20,25 +20,7 @@ interface UpdateFlags extends ConfigFlags {
 async function main(): Promise<void> {
   cli
     .command('', 'Pack workflows')
-    .option(
-      '--entry <source:output>',
-      'Use an explicit source/output workflow mapping',
-    )
-    .option(
-      '--external <selector>',
-      'Pin a workflow or action without bundling it',
-    )
-    .action(async (flags: ConfigFlags) => {
-      const config = normalizeConfigFlags(flags)
-      await pack({
-        ...config,
-        stderr: process.stderr,
-        stdout: process.stdout,
-      })
-    })
-
-  cli
-    .command('pack', 'Pack workflows')
+    .alias('pack')
     .option(
       '--entry <source:output>',
       'Use an explicit source/output workflow mapping',
