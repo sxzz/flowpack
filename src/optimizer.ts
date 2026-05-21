@@ -25,7 +25,7 @@ export function optimizeStep(stepValue: unknown): unknown | undefined {
   }
   const ifValue = staticIfValue(step.if)
   if (ifValue === false || ifValue === '') {
-    return undefined
+    return
   }
   if (ifValue === true) {
     const next = { ...step }
@@ -51,7 +51,7 @@ function staticIfValue(value: unknown): StaticIfValue | undefined {
     return value
   }
   if (typeof value !== 'string') {
-    return undefined
+    return
   }
   const trimmed = value.trim()
   return staticIfExpression(expressionBody(trimmed) ?? trimmed)

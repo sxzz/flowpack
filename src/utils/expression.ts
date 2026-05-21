@@ -52,7 +52,7 @@ export function parseExpression(expression: string): Expr {
 
 export function expressionBody(value: string): string | undefined {
   if (!value.startsWith('${{') || !value.endsWith('}}')) {
-    return undefined
+    return
   }
   return value.slice(3, -2).trim()
 }
@@ -70,7 +70,7 @@ export function staticExpression(
       printExpression(item, values),
     ).static
   }
-  return undefined
+  return
 }
 
 export function simplifyLogicalExpression(
@@ -132,9 +132,9 @@ export function staticIfExpression(
     if (value?.value === '') {
       return ''
     }
-    return undefined
+    return
   } catch {
-    return undefined
+    return
   }
 }
 
@@ -195,7 +195,7 @@ export function valueForIndexAccess(
   values: Record<string, unknown>,
 ): unknown {
   if (!(expr instanceof IndexAccess)) {
-    return undefined
+    return
   }
   return hasValueForIndexAccess(expr, values)
     ? values[indexAccessKey(expr)!]
@@ -227,7 +227,7 @@ function evaluateStaticExpression(
   values: Record<string, unknown>,
 ): StaticExpression | undefined {
   if (!canEvaluateExpression(expr, values)) {
-    return undefined
+    return
   }
   try {
     const data = new Evaluator(expr, expressionContext(values)).evaluate()
@@ -237,9 +237,7 @@ function evaluateStaticExpression(
       truthy: truthy(data),
       value: dataValue(data),
     }
-  } catch {
-    return undefined
-  }
+  } catch {}
 }
 
 function hasValueForIndexAccess(
@@ -255,11 +253,11 @@ function indexAccessKey(expr: IndexAccess): string | undefined {
     !(expr.expr instanceof ContextAccess) ||
     !(expr.index instanceof Literal)
   ) {
-    return undefined
+    return
   }
   const root = expr.expr.name.lexeme
   if (root !== 'inputs' && root !== 'secrets') {
-    return undefined
+    return
   }
   const name = literalString(expr.index)
   return name ? `${root}.${name}` : undefined
@@ -401,7 +399,7 @@ function replacementForIndexAccess(
   values: Record<string, unknown>,
 ): string | undefined {
   if (!hasValueForIndexAccess(expr, values)) {
-    return undefined
+    return
   }
   const value = valueForIndexAccess(expr, values)
   if (typeof value === 'string') {
@@ -453,15 +451,15 @@ function printFormatExpression(
   values: Record<string, unknown>,
 ): string | undefined {
   if (expr.functionName.lexeme.toLowerCase() !== 'format') {
-    return undefined
+    return
   }
   const [formatArg, ...args] = expr.args
   if (!formatArg) {
-    return undefined
+    return
   }
   const format = staticExpression(formatArg, values)
   if (typeof format?.value !== 'string') {
-    return undefined
+    return
   }
   const simplified = simplifyFormatString(
     format.value,
@@ -471,7 +469,7 @@ function printFormatExpression(
     })),
   )
   if (!simplified) {
-    return undefined
+    return
   }
   if (simplified.args.length === 0) {
     return quoteExpressionString(simplified.format)
@@ -508,15 +506,15 @@ function simplifyFormatString(
 
     const end = format.indexOf('}', index + 1)
     if (end === -1) {
-      return undefined
+      return
     }
     const rawIndex = /^\d+/u.exec(format.slice(index + 1, end))?.[0]
     if (!rawIndex) {
-      return undefined
+      return
     }
     const arg = args[Number(rawIndex)]
     if (!arg) {
-      return undefined
+      return
     }
     if (arg.static) {
       nextFormat += escapeFormatLiteral(arg.static.data.coerceString())

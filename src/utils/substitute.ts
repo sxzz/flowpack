@@ -89,7 +89,7 @@ function parseCompositeRunExpression(value: string): string | undefined {
     'actionspack-substitute/action.yml',
   )
   if (!result.value) {
-    return undefined
+    return
   }
   const token = findToken(result.value, ['runs', 'steps', '0', 'run'])
   return token && isBasicExpression(token) ? token.expression : undefined
@@ -113,7 +113,7 @@ function findToken(
       ? findToken(token.get(index), rest)
       : undefined
   }
-  return undefined
+  return
 }
 
 function directReplacement(

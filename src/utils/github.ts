@@ -75,7 +75,7 @@ export class HttpGitHubClient implements GitHubClient {
     )
 
     if (!response) {
-      return undefined
+      return
     }
     if (
       response.encoding !== 'base64' ||
@@ -117,7 +117,7 @@ export class HttpGitHubClient implements GitHubClient {
       headers,
     })
     if (response.status === 404 && allowNotFound) {
-      return undefined
+      return
     }
     if (!response.ok) {
       throw new Error(

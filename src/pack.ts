@@ -442,7 +442,7 @@ function rewriteNeedsValue(
   replacements: Record<string, string[]>,
 ): unknown {
   if (value === undefined) {
-    return undefined
+    return
   }
   const originalIsString = typeof value === 'string'
   const needs = originalIsString
@@ -453,7 +453,7 @@ function rewriteNeedsValue(
   const rewritten = needs.flatMap((need) => replacements[need] ?? [need])
   const unique = [...new Set(rewritten)]
   if (unique.length === 0) {
-    return undefined
+    return
   }
   return originalIsString && unique.length === 1 ? unique[0] : unique
 }
@@ -470,7 +470,7 @@ function workflowCallConfig(
   }
   const onMap = asRecord(on)
   if (!onMap) {
-    return undefined
+    return
   }
   const call = onMap.workflow_call
   if (call === null) {

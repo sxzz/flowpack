@@ -2,7 +2,12 @@ import { access, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { parseWorkflowMap } from './workflow-parser.ts'
-import { parseYamlMap, stringifyWorkflowYaml, stringifyYaml } from './yaml.ts'
+import {
+  GENERATED_FILE_NOTICE,
+  parseYamlMap,
+  stringifyWorkflowYaml,
+  stringifyYaml,
+} from './yaml.ts'
 import type {
   ActionspackConfig,
   ActionspackOptions,
@@ -37,14 +42,6 @@ export async function readWorkflowFile(
   file: string,
 ): Promise<Record<string, unknown>> {
   return parseWorkflowMap(await readFile(file, 'utf8'), file)
-}
-
-export async function writeYamlFile(
-  file: string,
-  value: unknown,
-): Promise<void> {
-  await mkdir(path.dirname(file), { recursive: true })
-  await writeFile(file, stringifyYaml(value), 'utf8')
 }
 
 export async function discoverConfig(
@@ -157,7 +154,13 @@ export async function writeLockfile(
   cwd: string | undefined,
   lockfile: Lockfile,
 ): Promise<void> {
-  await writeYamlFile(path.join(resolveCwd(cwd), LOCKFILE_PATH), lockfile)
+  const file = path.join(resolveCwd(cwd), LOCKFILE_PATH)
+  await mkdir(path.dirname(file), { recursive: true })
+  await writeFile(
+    file,
+    `${GENERATED_FILE_NOTICE}${stringifyYaml(lockfile)}`,
+    'utf8',
+  )
 }
 
 export async function writeWorkflow(
