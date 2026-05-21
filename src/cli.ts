@@ -123,7 +123,7 @@ async function main(): Promise<void> {
       await verify()
     })
 
-  cli.help()
+  cli.version(pkg.version).help()
   cli.parse(process.argv, { run: false })
   await cli.runMatchedCommand()
 }
