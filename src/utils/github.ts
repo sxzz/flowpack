@@ -46,6 +46,7 @@ export class HttpGitHubClient implements GitHubClient {
     for (const candidate of candidates) {
       const response = await this.#request<GitHubRefResponse>(
         `/repos/${owner}/${repo}/git/ref/${candidate}`,
+        true,
       )
       const sha = response?.object?.sha
       if (sha) {

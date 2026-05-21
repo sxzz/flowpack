@@ -541,6 +541,38 @@ jobs:
     expect(calls).toBe(1)
   })
 
+  it('falls back from branch refs to tag refs when resolving GitHub refs', async () => {
+    const originalFetch = globalThis.fetch
+    const urls: string[] = []
+    globalThis.fetch = ((url) => {
+      urls.push(String(url))
+      if (String(url).endsWith('/git/ref/heads/v5')) {
+        return Promise.resolve(new Response(undefined, { status: 404 }))
+      }
+      return Promise.resolve(
+        Response.json({
+          object: {
+            sha: '93cb6efe18208431cddfb8368fd83d5badbf9bfd',
+          },
+        }),
+      )
+    }) as typeof fetch
+
+    try {
+      const github = new HttpGitHubClient(undefined)
+      await expect(
+        github.resolveRef('actions', 'checkout', 'v5'),
+      ).resolves.toBe('93cb6efe18208431cddfb8368fd83d5badbf9bfd')
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+
+    expect(urls).toEqual([
+      'https://api.github.com/repos/actions/checkout/git/ref/heads/v5',
+      'https://api.github.com/repos/actions/checkout/git/ref/tags/v5',
+    ])
+  })
+
   it('prints tree, why, and lockfile diffs from lockfile data', async () => {
     const cwd = await fixtureRepo({
       '.github/workflow.lock.yml': `
